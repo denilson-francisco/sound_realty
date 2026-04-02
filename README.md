@@ -66,9 +66,10 @@ mlflow ui   # open http://localhost:5000
 
 ---
 
-## Drift monitoring
+## Model Health Monitoring 
 
 To evaluate the currently deployed model on new labeled data without retraining:
+
 ```bash
 python evaluate_model.py
 ```
@@ -76,6 +77,31 @@ python evaluate_model.py
 Each run is logged to the same MLflow experiment so R² trend is visible over time.
 The JSON snapshot in `data/training_results/` includes a `training_run_id` field
 that links back to the training run that produced the model being evaluated.
+
+Two complementary signals are tracked:
+
+**Outcome drift** — measured by `evaluate_model.py` on new labeled data. R², MAE,
+and RMSE are compared against the values logged during training. A declining R²
+over successive evaluation runs indicates the model is losing predictive power on
+recent data and a retrain should be considered.
+
+**Input distribution drift** — monitored at prediction time using the p5/p95
+percentiles stored in `model/model_percentiles.json`, computed from the training
+set when the model was built. If an incoming feature value falls outside those
+bounds, a warning is added to the API response. A sustained increase in warning
+rate across requests is an early signal that the input distribution has shifted,
+even before labeled outcomes are available.
+
+### Simulating real-world drift monitoring
+
+In a real deployment, `evaluate_model.py` would be run periodically as new labeled sales data arrives. To simulate this locally, the full dataset was split by date before any training took place:
+
+- The most recent 10% of sales (by sale date) were held out as `data/kc_house_data_new_data.csv`, representing data the model has never seen. None of the data here is ever used for training.
+- The remaining 90% were saved as `data/kc_house_data.csv` and used for all training.
+
+This split takes the most recent 10% as "new data", and writes both files deterministically (`random_seed=42` is used only to break ties within the same date). The original file is `data/kc_house_data_original.csv` and is not modified.
+
+When running `evaluate_model.py` to simulate a production monitoring run, point it at `data/kc_house_data_new_data.csv`. Any degradation in R² relative to the training run metrics reflects how well the model generalizes to more recent sales it was never trained on.
 
 ---
 
