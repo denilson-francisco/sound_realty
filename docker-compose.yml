@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    image: sound-realty-api:1.0.0
+    ports:
+      - "8000:8000"
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1      # replace one replica at a time
+        delay: 10s          # wait 10s between each replica update
+        order: start-first  # start new replica before stopping old one (zero downtime)
+      restart_policy:
+        condition: on-failure
