@@ -5,6 +5,8 @@ It wraps a scikit-learn model trained on King County sales data, enriches reques
 with census demographics on the backend, and is deployed via Docker Swarm for
 horizontal scaling and zero-downtime model updates.
 
+<img width="1609" height="667" alt="Sytem_Archictecure" src="https://github.com/user-attachments/assets/7ee59e73-7af3-454f-9beb-a0f0d54a1d1a" />
+
 ---
 
 ## Project structure
