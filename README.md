@@ -358,3 +358,9 @@ docker service ls > logs/scale_down.txt
 # Bonus — basic endpoint with 8 fields only
 python test_api.py --basic --url http://<WSL_IP>:8000 > logs/test_api_basic.txt
 ```
+
+### Other observations
+
+- /logs is is not a requirement to run, but rather the outcome of "Test commands" logging from the section above. As they show what is being saved from setting up Docker to testing the API endpoints, I added a few examples on that folder
+- /data/training_results is not a requirement to run, but rather an outcome of training or evaluating a model. As they show what is being saved for monitoring and tracking purposes, I added a few examples on that folder
+
