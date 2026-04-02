@@ -1,0 +1,2 @@
+ID             NAME         MODE         REPLICAS   IMAGE                    PORTS
+khq7u45d26w6   realty_api   replicated   0/2        sound-realty-api:1.0.0   *:8000->8000/tcp

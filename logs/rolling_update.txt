@@ -1,0 +1,5 @@
+ID             NAME               IMAGE                    NODE            DESIRED STATE   CURRENT STATE             ERROR     PORTS
+y9rqbuz5vzyx   realty_api.1       sound-realty-api:1.1.0   HP-5CG2220DCB   Running         Running 58 seconds ago              
+oga0xtskcja6    \_ realty_api.1   sound-realty-api:1.0.0   HP-5CG2220DCB   Shutdown        Shutdown 54 seconds ago             
+ln0t0fx53xht   realty_api.2       sound-realty-api:1.1.0   HP-5CG2220DCB   Running         Running 16 seconds ago              
+vp6uxegy6777    \_ realty_api.2   sound-realty-api:1.0.0   HP-5CG2220DCB   Shutdown        Shutdown 12 seconds ago             
