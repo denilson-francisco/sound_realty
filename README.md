@@ -7,6 +7,17 @@ horizontal scaling and zero-downtime model updates.
 
 <img width="1609" height="667" alt="Sytem_Archictecure" src="https://github.com/user-attachments/assets/7ee59e73-7af3-454f-9beb-a0f0d54a1d1a" />
 
+
+## Runtime architecture
+
+At runtime, the service flow is:
+
+`Client -> Docker Swarm service -> Uvicorn -> FastAPI application`
+
+- **FastAPI** defines the API endpoints, request validation, and prediction logic.
+- **Uvicorn** is the ASGI server that actually runs the FastAPI application and handles incoming HTTP requests inside each container.
+- **Docker Swarm** provides service orchestration, replica management, built-in load distribution, health-based replacement, and rolling updates.
+
 ---
 
 ## Project structure
@@ -32,7 +43,13 @@ test_api.py                demo client
 docker-compose.yml         Swarm deployment config
 conda_environment.yml      Python environment
 ```
+---
 
+## Prerequisites
+
+- Python / Conda environment from `conda_environment.yml`
+- Docker Engine with Swarm mode enabled
+- MLflow (installed through the project environment)
 ---
 
 ## Setup
@@ -121,40 +138,115 @@ Images follow `MAJOR.MINOR.PATCH`:
 
 ### Endpoints
 
-**`GET /health`**
+#### **`GET /health`**
 Returns `{"status": "ok"}`. Used by Docker Swarm for health checks.
 
-**`POST /predict`**
+#### **`POST /predict`**
 Accepts the 18 columns from `future_unseen_examples.csv`. Demographics are joined
 server-side using `zipcode` — they must not be included in the request.
 
-Returns:
+##### Example request — `POST /predict`
+
 ```json
 {
-  "prediction_id": "uuid",
-  "predicted_price": 485000.0,
-  "warnings": [],
-  "data_quality_score": 1.0,
+  "bedrooms": 4,
+  "bathrooms": 1.0,
+  "sqft_living": 1680,
+  "sqft_lot": 5043,
+  "floors": 1.5,
+  "waterfront": 0,
+  "view": 0,
+  "condition": 4,
+  "grade": 6,
+  "sqft_above": 1680,
+  "sqft_basement": 0,
+  "yr_built": 1911,
+  "yr_renovated": 0,
+  "zipcode": "98118",
+  "lat": 47.5354,
+  "long": -122.273,
+  "sqft_living15": 1560,
+  "sqft_lot15": 5765
+}
+```
+
+##### Example response
+
+```json
+{
+  "prediction_id": "d2919088-da15-434f-b167-ee19128df395",
+  "predicted_price": 352202.0,
+  "warnings": [
+    "yr_built=1911 is outside the typical training range (p5=1915.0, p95=2011.0)"
+  ],
+  "data_quality_score": 0.9,
   "model_name": "sound-realty-price-predictor",
   "model_version": "1.1.0",
   "model_stage": "development",
   "schema_version": "1.0",
-  "prediction_latency_ms": 12.4,
-  "timestamp": "2026-04-02T..."
+  "prediction_latency_ms": 39.6,
+  "timestamp": "2026-04-02T14:16:52.375195+00:00"
 }
 ```
+
+In this example, the request is accepted and scored successfully, but the API returns one warning because `yr_built=1911` falls outside the typical training distribution. That warning reduces the `data_quality_score` from `1.0` to `0.9`.
 
 `warnings` lists any out-of-range feature values (outside p5/p95 training bounds)
 or cross-field inconsistencies (e.g. `sqft_above + sqft_basement != sqft_living`).
 `data_quality_score` starts at 1.0 and decreases by 0.1 per warning.
 
-**`POST /predict/basic`**
+#### **`POST /predict/basic`**
 Requires only the 8 core house features plus `zipcode`. The remaining 10 features
 are optional — if not provided, training-set medians are used. Each imputed field
 is listed in the `warnings` field of the response.
 
 Required fields: `bedrooms`, `bathrooms`, `sqft_living`, `sqft_lot`, `floors`,
 `sqft_above`, `sqft_basement`, `zipcode`.
+
+##### Example request — `POST /predict/basic`
+
+```json
+{
+  "bedrooms": 4.0,
+  "bathrooms": 1.0,
+  "sqft_living": 1680.0,
+  "sqft_lot": 5043.0,
+  "floors": 1.5,
+  "sqft_above": 1680.0,
+  "sqft_basement": 0.0,
+  "zipcode": "98118"
+}
+```
+
+##### Example response
+
+```json
+{
+  "prediction_id": "29948b83-2794-473d-91bf-902157fbdd4c",
+  "predicted_price": 432658.76,
+  "warnings": [
+    "waterfront not provided, median value used",
+    "view not provided, median value used",
+    "condition not provided, median value used",
+    "grade not provided, median value used",
+    "yr_built not provided, median value used",
+    "yr_renovated not provided, median value used",
+    "lat not provided, median value used",
+    "long not provided, median value used",
+    "sqft_living15 not provided, median value used",
+    "sqft_lot15 not provided, median value used"
+  ],
+  "data_quality_score": 0.0,
+  "model_name": "sound-realty-price-predictor",
+  "model_version": "1.1.0",
+  "model_stage": "development",
+  "schema_version": "1.0",
+  "prediction_latency_ms": 34.24,
+  "timestamp": "2026-04-02T20:00:20.010710+00:00"
+}
+```
+
+In this example, only the 8 required core features plus `zipcode` are provided. The remaining optional fields are imputed with training-set medians, and each imputation is reported in `warnings`. Since 10 warnings are generated, the `data_quality_score` is reduced from `1.0` to `0.0`.
 
 ---
 
