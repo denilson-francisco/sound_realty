@@ -1,0 +1,90 @@
+{
+  "mlflow_run_id": "ae51649eb75447d388eecab9f44565e4",
+  "mlflow_run_name": "training_20260331_201402",
+  "run_type": "training",
+  "mode": "improved",
+  "timestamp": "2026-03-31T20:14:02.164155+00:00",
+  "selected_model": "RandomForest",
+  "train_test_split_ratio": 0.75,
+  "random_state": 42,
+  "n_features": 43,
+  "feature_names": [
+    "bedrooms",
+    "bathrooms",
+    "sqft_living",
+    "sqft_lot",
+    "floors",
+    "waterfront",
+    "view",
+    "condition",
+    "grade",
+    "sqft_above",
+    "sqft_basement",
+    "yr_built",
+    "yr_renovated",
+    "lat",
+    "long",
+    "sqft_living15",
+    "sqft_lot15",
+    "ppltn_qty",
+    "urbn_ppltn_qty",
+    "sbrbn_ppltn_qty",
+    "farm_ppltn_qty",
+    "non_farm_qty",
+    "medn_hshld_incm_amt",
+    "medn_incm_per_prsn_amt",
+    "hous_val_amt",
+    "edctn_less_than_9_qty",
+    "edctn_9_12_qty",
+    "edctn_high_schl_qty",
+    "edctn_some_clg_qty",
+    "edctn_assoc_dgre_qty",
+    "edctn_bchlr_dgre_qty",
+    "edctn_prfsnl_qty",
+    "per_urbn",
+    "per_sbrbn",
+    "per_farm",
+    "per_non_farm",
+    "per_less_than_9",
+    "per_9_to_12",
+    "per_hsd",
+    "per_some_clg",
+    "per_assoc",
+    "per_bchlr",
+    "per_prfsnl"
+  ],
+  "models": [
+    {
+      "model_type": "KNN",
+      "hyperparameters": {
+        "n_neighbors": 5,
+        "weights": "uniform",
+        "scaler": "RobustScaler"
+      },
+      "metrics": {
+        "train_r2": 0.8592,
+        "test_r2": 0.7682,
+        "test_mae": 89771.97,
+        "test_rmse": 186214.92
+      }
+    },
+    {
+      "model_type": "RandomForest",
+      "hyperparameters": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "random_state": 42
+      },
+      "metrics": {
+        "train_r2": 0.9839,
+        "test_r2": 0.8776,
+        "test_mae": 70181.92,
+        "test_rmse": 135312.34
+      }
+    }
+  ],
+  "selected_model_cv": {
+    "cv_mean_r2": 0.8848,
+    "cv_std_r2": 0.0069
+  }
+}

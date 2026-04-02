@@ -1,0 +1,15 @@
+{
+  "mlflow_run_id": "9e725efd59d4457f9b1d1828e9da1c1d",
+  "mlflow_run_name": "evaluation_20260402_132150",
+  "run_type": "evaluation",
+  "timestamp": "2026-04-02T13:21:50.713240+00:00",
+  "training_run_id": "cf2613655a2e4d5c9412de0e29d9eb00",
+  "model_type": "KNN",
+  "evaluated_on": "data/kc_house_data_new_data.csv",
+  "n_samples": 649,
+  "metrics": {
+    "r2": 0.7367,
+    "mae": 107315.99,
+    "rmse": 188794.95
+  }
+}
